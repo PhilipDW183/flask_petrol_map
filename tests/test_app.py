@@ -9,4 +9,4 @@ def test_app_running():
 def test_app_visible():
     with app.test_client() as client:
         response = client.get("/")
-        assert b'Hello World' in response.data
+        assert b'Petrol station map' in response.data
