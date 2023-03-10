@@ -5,7 +5,7 @@
 </div>
 
 <div class="row mb-3">
-  <div class="col-12 col-md-4 col-xl-3">
+  <div class="col-12 col-md-5 col-xl-3">
     <form name="search", action="", method="post">
       {{form.hidden_tag()}}
       <div class="row">
@@ -25,7 +25,9 @@
     </form>
 
   </div>
-  <div class="col-12 col-md-8 col-xl-9" id="map"></div>
+  <div class="col-12 col-md-7 col-xl-9 mt-2 mb-2 embed-responsive" id="map">
+    {{map|safe}}
+  </div>
 </div>
 
 {% endblock %}
