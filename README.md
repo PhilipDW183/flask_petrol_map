@@ -1,5 +1,7 @@
 # Flask petrol map
 
+[![Python application](https://github.com/PhilipDW183/flask_petrol_map/actions/workflows/python-app.yml/badge.svg)](https://github.com/PhilipDW183/flask_petrol_map/actions/workflows/python-app.yml)
+
 ## Initial setup
 
 To setup the application to run on a new machine:
