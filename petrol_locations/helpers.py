@@ -2,6 +2,8 @@ import folium
 from geopy.geocoders import Bing
 from geopy.exc import GeocoderTimedOut, GeocoderServiceError
 from flask_config import Config
+import geopandas as gpd
+from osmnx.geometries import geometries_from_point
 
 CENTRAL_LONDON_LOC = [51.505, -0.09]
 CONFIG = Config()
@@ -73,3 +75,35 @@ def geocode_postcode(postcode: str) -> tuple:
     except ValueError as e:
         print(e)
         return None
+    
+def get_surrounding_petrol_stations(center_point: list, distance: int = 2_000):
+    """
+    get petrol stations around a central point
+
+    Inputs
+        centre_point: (lat, lon) from which to search around
+        distance: distance in metres to search around centre point
+
+    Outputs:
+        petrol_locations: geoDataFrame of petrol locations or None
+    """
+
+    try:
+
+        if not all(isinstance(point, float) for point in center_point) or not isinstance(distance, int):
+            raise ValueError("Incorrect values passed")
+
+        petrol_locations = geometries_from_point(
+            center_point = center_point,
+            tags = {"amenity":"fuel"},
+            dist = distance)
+        
+        if not isinstance(petrol_locations, gpd.GeoDataFrame) or len(petrol_locations) < 1:
+            raise TypeError("No petrol locations found")
+    
+        return petrol_locations
+    
+    except ValueError as e:
+        print(e)
+    except TypeError as e:
+        print(e)
