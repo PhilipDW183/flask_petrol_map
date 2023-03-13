@@ -10,12 +10,6 @@ def setup_app():
     app.config["SECRET_KEY"] = "test"
     return app
 
-@pytest.fixture
-def mock_config():
-    mock = MagicMock()
-    with patch("petrol_locations.Config", return_value=mock):
-        yield mock
-
 def test_app_running(setup_app):
     with setup_app.test_client() as client:
         response = client.get("/")
