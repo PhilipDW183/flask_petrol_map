@@ -21,7 +21,6 @@ def index():
     map_obj = create_base_map()
     iframe = render_map(map_obj)
     if form.validate_on_submit():
-        print("validated")
         postcode = form.postcode.data
         fuel_type = form.fuel_type.data
         location = geocode_postcode(postcode)

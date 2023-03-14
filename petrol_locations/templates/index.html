@@ -21,6 +21,11 @@
         <div class = "col-12">
           {{form.fuel_type.label}}</br>
           {{form.fuel_type}}
+          {% if form.fuel_type.errors %}
+            {% for error in form.fuel_type.errors %}
+            <span><p class = "text-danger">{{error}}</p></span>
+            {% endfor %}
+          {% endif %}
         </div>
         <div class = "col-12 mt-2">
           <button type="submit" class="btn btn-primary">Submit</button>
