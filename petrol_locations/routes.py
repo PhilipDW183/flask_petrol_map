@@ -30,7 +30,8 @@ def index():
             return render_template("index.html", form=form, map=iframe)
         
         petrol_stores = get_surrounding_petrol_stations(
-            center_point=(location[1], location[0]), distance=DISTANCE
+            center_point=(location[1], location[0]), distance=DISTANCE,
+            fuel_type=fuel_type
         )
 
         if not isinstance(petrol_stores, gpd.GeoDataFrame):

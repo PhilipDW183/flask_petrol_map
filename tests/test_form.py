@@ -12,7 +12,7 @@ def app():
 
 def test_postcode_valid(app):
     with app.app_context():
-        form = PetrolForm(postcode="N19 4LD", fuel_type="E10")
+        form = PetrolForm(postcode="N19 4LD", fuel_type=FUEL_TYPES[0][0])
         assert form.validate() is True
 
 def test_postcode_invalid_characters(app):
@@ -31,7 +31,7 @@ def test_postcode_invalid_length(app, postcode):
 @pytest.mark.parametrize("fuel", FUEL_TYPES)
 def test_fuel_type_valid(app, fuel):
     with app.app_context():
-        form = PetrolForm(postcode="M1 1AA", fuel_type=fuel)
+        form = PetrolForm(postcode="M1 1AA", fuel_type=fuel[0])
         assert form.validate() is True
 
 @pytest.mark.parametrize("fuel", ["Electric", "Oil", "Gas", "Petrol"])

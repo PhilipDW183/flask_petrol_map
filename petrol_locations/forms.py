@@ -3,7 +3,13 @@ from wtforms import StringField, SelectField
 from wtforms.validators import DataRequired, Length, Regexp
 import re
 
-FUEL_TYPES = ["Diesel","Octane 91","Octane 95","Octane 98","E10","LPG", "LH2"]
+FUEL_TYPES = [("diesel","Diesel"),
+              ("octange_91", "Octane 91"),
+              ("octane_95", "Octane 95"),
+              ("octane_98", "Octane 98"),
+              ("e10", "E10"),
+              ("lpg", "LPG"),
+               ("LH2", "LH2")]
 
 class PetrolForm(FlaskForm):
     postcode = StringField("Postcode",
@@ -14,6 +20,6 @@ class PetrolForm(FlaskForm):
                                                flags=re.IGNORECASE,
                                                message="Not a recognised postcode")] )
     fuel_type = SelectField("Fuel Type",
-                            choices = [(fuel, fuel) for fuel in FUEL_TYPES],
+                            choices = FUEL_TYPES,
                             validators = [DataRequired()])
     

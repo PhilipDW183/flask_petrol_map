@@ -76,7 +76,7 @@ def geocode_postcode(postcode: str) -> tuple:
         print(e)
         return None
     
-def get_surrounding_petrol_stations(center_point: list, distance: int = 2_000):
+def get_surrounding_petrol_stations(center_point: list, fuel_type: str, distance: int = 2_000):
     """
     get petrol stations around a central point
 
@@ -95,13 +95,12 @@ def get_surrounding_petrol_stations(center_point: list, distance: int = 2_000):
 
         petrol_locations = geometries_from_point(
             center_point = center_point,
-            tags = {"amenity":"fuel"},
+            tags = {"amenity":"fuel",
+                    "fuel":fuel_type},
             dist = distance)
         
         if not isinstance(petrol_locations, gpd.GeoDataFrame) or len(petrol_locations) < 1:
             raise TypeError("No petrol locations found")
-        
-        print(petrol_locations.columns)
     
         return petrol_locations
     
