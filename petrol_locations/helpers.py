@@ -140,10 +140,13 @@ def add_petrol_stations_to_map(map_obj: folium.Map, gdf: gpd.GeoDataFrame,
         else:
             popup_text = [None] * len(gdf)
 
+        tooltip = "Petrol Station"
+
         for coord, text in zip(gdf.geometry, popup_text):
             print(text)
             folium.Marker(location=[coord.y, coord.x], 
-                          popup=text).add_to(map_obj)
+                          popup=text,
+                          tooltip=tooltip).add_to(map_obj)
 
         return map_obj
     
@@ -160,3 +163,28 @@ def convert_polygons_to_points(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
 
     return gdf
 
+def add_origin_to_map(latitude, longitude, map_obj):
+    """
+    Adds origin to the folium map object
+    """
+    folium.Marker(location=[latitude, longitude],
+                  popup="Home",
+                  tooltip="Home",
+                  icon=folium.Icon(color="red")).add_to(map_obj)
+    
+    return map_obj
+
+def add_circle_to_map(latitude, longitude, map_obj, distance):
+    """
+    Adds distance circle to map
+    """
+
+    folium.Circle(
+        radius = distance,
+        location=[latitude, longitude],
+        popup = f"Distance: {distance/1000}km",
+        color = "crimson",
+        fill=False
+    ).add_to(map_obj)
+
+    return map_obj
