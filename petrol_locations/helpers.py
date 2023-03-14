@@ -145,7 +145,10 @@ def add_petrol_stations_to_map(map_obj: folium.Map, gdf: gpd.GeoDataFrame,
             print(text)
             folium.Marker(location=[coord.y, coord.x], 
                           popup=text,
-                          tooltip=tooltip).add_to(map_obj)
+                          tooltip=tooltip,
+                          icon = folium.Icon(color="blue",
+                                   icon="gas-pump",
+                                   prefix="fa")).add_to(map_obj)
 
         return map_obj
     
@@ -169,7 +172,10 @@ def add_origin_to_map(latitude, longitude, map_obj):
     folium.Marker(location=[latitude, longitude],
                   popup="Home",
                   tooltip="Home",
-                  icon=folium.Icon(color="red")).add_to(map_obj)
+                  icon=folium.Icon(color="red",
+                                   icon="home",
+                                   prefix="fa"),
+                 ).add_to(map_obj)
     
     return map_obj
 
