@@ -12,6 +12,11 @@
         <div class = "col-12">
           {{form.postcode.label}}</br>
           {{form.postcode}}
+          {% if form.postcode.errors %}
+            {% for error in form.postcode.errors %}
+             <span><p class = "text-danger">{{error}}</p></span>
+            {% endfor %}
+          {% endif %}
         </div>
         <div class = "col-12">
           {{form.fuel_type.label}}</br>
