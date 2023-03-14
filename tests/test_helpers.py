@@ -1,9 +1,11 @@
-from petrol_locations.helpers import geocode_postcode, get_surrounding_petrol_stations
+from petrol_locations.helpers import geocode_postcode, get_surrounding_petrol_stations, add_petrol_stations_to_map
 from unittest.mock import MagicMock, patch
 from geopy.exc import GeocoderTimedOut, GeocoderServiceError
 from geopandas import GeoDataFrame
+import geopandas as gpd
 from shapely.geometry import Point
 import pytest
+import folium
 
 class StubResponse:
     def __init__(self, longitude, latitude):
@@ -74,5 +76,45 @@ def test_get_surrounding_petrol_stations_invalid_response():
                           ((-0.13329, None), 1000)])
 def test_get_surrounding_petrol_stations_invalid_input(point, distance):
     result = get_surrounding_petrol_stations(point, distance)
+    assert result == None
+
+
+@pytest.fixture
+def map_obj():
+    return folium.Map(location=[51.5074, 0.1278], zoom_start=12)
+
+@pytest.fixture
+def petrol_stations_gdf():
+    points = [Point(0.1, 51.5), Point(0.2, 51.5), Point(0.3, 51.5)]
+    data = {'geometry': points, 'name': ['Station 1', 'Station 2', 'Station 3']}
+    gdf = gpd.GeoDataFrame(data)
+    return gdf
+
+
+def test_add_petrol_stations_to_map_with_valid_input(map_obj, petrol_stations_gdf):
+    # Call the function with valid input parameters
+    result = add_petrol_stations_to_map(map_obj, petrol_stations_gdf)
+
+    # Check that the result is a Folium Map object with markers
+    assert isinstance(result, folium.Map)
+
+
+def test_add_petrol_stations_to_map_with_invalid_input(map_obj, petrol_stations_gdf):
+    # Call the function with invalid input parameters
+    result = add_petrol_stations_to_map(None, petrol_stations_gdf)
+    assert result == None
+
+    result = add_petrol_stations_to_map(map_obj, None)
+    assert result == None
+
+
+
+
+def test_add_petrol_stations_to_map_with_missing_geometry_column(map_obj):
+    # Create a GeoDataFrame without a 'geometry' column
+    data = {'name': ['Station 1', 'Station 2', 'Station 3']}
+    gdf = gpd.GeoDataFrame(data)
+
+    result = add_petrol_stations_to_map(map_obj, gdf)
     assert result == None
 

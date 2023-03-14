@@ -100,6 +100,8 @@ def get_surrounding_petrol_stations(center_point: list, distance: int = 2_000):
         
         if not isinstance(petrol_locations, gpd.GeoDataFrame) or len(petrol_locations) < 1:
             raise TypeError("No petrol locations found")
+        
+        print(petrol_locations.columns)
     
         return petrol_locations
     
@@ -107,3 +109,54 @@ def get_surrounding_petrol_stations(center_point: list, distance: int = 2_000):
         print(e)
     except TypeError as e:
         print(e)
+
+def add_petrol_stations_to_map(map_obj: folium.Map, gdf: gpd.GeoDataFrame,
+                      popup_text_col: str = None):
+    """
+    Add points from a GeoDataFrame to a Folium Map object
+    
+    Inputs
+        map_obj: A Folium Map Object
+        gdf: A GeoDataFrame containing point geometries
+        popup_text_col: A string representing the column name containg the popup text
+
+    Outputs
+        map_obj: A Folium Map Object with markers
+    """
+    try:
+        if not isinstance(map_obj, folium.Map) or not isinstance(gdf, gpd.GeoDataFrame):
+            raise ValueError("Invalid map or geodataframe")
+            
+        if popup_text_col and popup_text_col not in gdf.columns:
+            raise ValueError(f"{popup_text_col} not found in GeoDataFrame columns")
+        
+        if 'geometry' not in gdf.columns:
+            raise ValueError("No 'geometry' column found in GeoDataFrame")
+
+        gdf = convert_polygons_to_points(gdf)
+
+        if popup_text_col:
+            popup_text = gdf[popup_text_col].to_list()
+        else:
+            popup_text = [None] * len(gdf)
+
+        for coord, text in zip(gdf.geometry, popup_text):
+            print(text)
+            folium.Marker(location=[coord.y, coord.x], 
+                          popup=text).add_to(map_obj)
+
+        return map_obj
+    
+    except ValueError as e:
+        print(e)
+    except Exception as e:
+        print(e)
+
+def convert_polygons_to_points(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """
+    Converts all polygons in a geodataframe to points
+    """
+    gdf["geometry"] = gdf["geometry"].centroid
+
+    return gdf
+
