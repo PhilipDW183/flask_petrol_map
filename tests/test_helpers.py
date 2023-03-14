@@ -93,7 +93,7 @@ def petrol_stations_gdf():
 
 def test_add_petrol_stations_to_map_with_valid_input(map_obj, petrol_stations_gdf):
     # Call the function with valid input parameters
-    result = add_petrol_stations_to_map(map_obj, petrol_stations_gdf)
+    result = add_petrol_stations_to_map(map_obj, petrol_stations_gdf, ["name"])
 
     # Check that the result is a Folium Map object with markers
     assert isinstance(result, folium.Map)
@@ -101,10 +101,13 @@ def test_add_petrol_stations_to_map_with_valid_input(map_obj, petrol_stations_gd
 
 def test_add_petrol_stations_to_map_with_invalid_input(map_obj, petrol_stations_gdf):
     # Call the function with invalid input parameters
-    result = add_petrol_stations_to_map(None, petrol_stations_gdf)
+    result = add_petrol_stations_to_map(None, petrol_stations_gdf, ["name"])
     assert result == None
 
-    result = add_petrol_stations_to_map(map_obj, None)
+    result = add_petrol_stations_to_map(map_obj, None, ["name"])
+    assert result == None
+
+    result = add_petrol_stations_to_map(map_obj, petrol_stations_gdf)
     assert result == None
 
 
@@ -115,6 +118,6 @@ def test_add_petrol_stations_to_map_with_missing_geometry_column(map_obj):
     data = {'name': ['Station 1', 'Station 2', 'Station 3']}
     gdf = gpd.GeoDataFrame(data)
 
-    result = add_petrol_stations_to_map(map_obj, gdf)
+    result = add_petrol_stations_to_map(map_obj, gdf, ["name"])
     assert result == None
 

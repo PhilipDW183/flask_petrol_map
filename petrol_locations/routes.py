@@ -32,7 +32,7 @@ def index():
             center_point=(location[1], location[0]), distance=DISTANCE,
             fuel_type=fuel_type
         )
-
+        
         if not isinstance(petrol_stores, gpd.GeoDataFrame):
             flash("No petrol stations found nearby", "danger")
             petrol_map = create_base_map(location[1], location[0])
@@ -41,7 +41,7 @@ def index():
             return render_template("index.html", form=form, map=iframe)
         
         petrol_map = create_base_map(location[1], location[0])
-        petrol_map = add_petrol_stations_to_map(petrol_map, petrol_stores, "name")
+        petrol_map = add_petrol_stations_to_map(petrol_map, petrol_stores, ["name", "operator", "brand"])
         petrol_map = add_origin_to_map(location[1], location[0], petrol_map)
         petrol_map = add_circle_to_map(location[1], location[0], petrol_map, DISTANCE+500)
         iframe = render_map(petrol_map)

@@ -118,7 +118,7 @@ def get_surrounding_petrol_stations(
 
 
 def add_petrol_stations_to_map(
-    map_obj: folium.Map, gdf: gpd.GeoDataFrame, popup_text_col: str = None
+    map_obj: folium.Map, gdf: gpd.GeoDataFrame, popup_text_col: list = None
 ):
     """
     Add points from a GeoDataFrame to a Folium Map object
@@ -135,7 +135,7 @@ def add_petrol_stations_to_map(
         if not isinstance(map_obj, folium.Map) or not isinstance(gdf, gpd.GeoDataFrame):
             raise ValueError("Invalid map or geodataframe")
 
-        if popup_text_col and popup_text_col not in gdf.columns:
+        if popup_text_col and not any(col in popup_text_col for col in gdf.columns):
             raise ValueError(f"{popup_text_col} not found in GeoDataFrame columns")
 
         if "geometry" not in gdf.columns:
@@ -143,15 +143,13 @@ def add_petrol_stations_to_map(
 
         gdf = convert_polygons_to_points(gdf)
 
-        if popup_text_col:
-            popup_text = gdf[popup_text_col].to_list()
-        else:
-            popup_text = [None] * len(gdf)
+        popup_valid_text_cols = [col for col in popup_text_col if col in gdf.columns]
+
+        popup_text = get_petrol_stations_name(gdf, popup_valid_text_cols)
 
         tooltip = "Petrol Station"
 
         for coord, text in zip(gdf.geometry, popup_text):
-            print(text)
             folium.Marker(
                 location=[coord.y, coord.x],
                 popup=text,
@@ -224,3 +222,25 @@ def add_circle_to_map(
     ).add_to(map_obj)
 
     return map_obj
+
+def get_petrol_stations_name(gdf: gpd.GeoDataFrame, columns: list) -> list:
+    """
+    Gets the name of the petrol station
+
+    Inputs
+        gdf: GeoDataFrame of petrol station names
+        columns: list of columns containing potential names order by preference
+
+    Outputs:
+        petrol_names: list of names of names of petrol station
+    """
+
+    petrol_names = []
+
+    for index, row in gdf.iterrows():
+        petrol_station_names = row[columns]
+        petrol_station_name_col = petrol_station_names.first_valid_index()
+        petrol_station_name = petrol_station_names[petrol_station_name_col]
+        petrol_names.append(petrol_station_name)
+
+    return petrol_names
