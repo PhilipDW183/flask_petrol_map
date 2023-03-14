@@ -8,10 +8,12 @@ from osmnx.geometries import geometries_from_point
 CENTRAL_LONDON_LOC = [51.505, -0.09]
 CONFIG = Config()
 
-def create_base_map(longitude: float = CENTRAL_LONDON_LOC[0],
-                     latitude: float = CENTRAL_LONDON_LOC[1]) -> folium.Map:
+
+def create_base_map(
+    longitude: float = CENTRAL_LONDON_LOC[0], latitude: float = CENTRAL_LONDON_LOC[1]
+) -> folium.Map:
     """
-    Generate a folium basemap 
+    Generate a folium basemap
 
     Inputs
         longitude: longitude of location
@@ -20,10 +22,10 @@ def create_base_map(longitude: float = CENTRAL_LONDON_LOC[0],
     Output
         Folium basemap of location
     """
-    map_obj = folium.Map(location=[longitude, latitude],
-                     zoom_start=12)
-    
+    map_obj = folium.Map(location=[longitude, latitude], zoom_start=12)
+
     return map_obj
+
 
 def render_map(map_obj: folium.Map):
     """
@@ -40,6 +42,7 @@ def render_map(map_obj: folium.Map):
 
     return iframe
 
+
 def geocode_postcode(postcode: str) -> tuple:
     """
     Turn the postcode into a longitude and latitude point
@@ -51,15 +54,12 @@ def geocode_postcode(postcode: str) -> tuple:
         point: longitude and latitude as a tuple (longitude, latitude) else None
     """
     try:
-
         if not postcode or not isinstance(postcode, str):
             raise ValueError("Invalid postcode format")
         geolocator = Bing(api_key=CONFIG.BING_API_KEY)
 
         point_location = geolocator.geocode(
-                query={"postalCode":postcode,
-                        "countryRegion":"UK"},
-                exactly_one=True
+            query={"postalCode": postcode, "countryRegion": "UK"}, exactly_one=True
         )
 
         if point_location:
@@ -68,15 +68,18 @@ def geocode_postcode(postcode: str) -> tuple:
             point = None
 
         return point
-    
+
     except (GeocoderTimedOut, GeocoderServiceError) as e:
         print(f"Error geocoding postcode {postcode}: {e}")
         return None
     except ValueError as e:
         print(e)
         return None
-    
-def get_surrounding_petrol_stations(center_point: list, fuel_type: str, distance: int = 2_000):
+
+
+def get_surrounding_petrol_stations(
+    center_point: list, fuel_type: str, distance: int = 2_000
+):
     """
     get petrol stations around a central point
 
@@ -89,31 +92,37 @@ def get_surrounding_petrol_stations(center_point: list, fuel_type: str, distance
     """
 
     try:
-
-        if not all(isinstance(point, float) for point in center_point) or not isinstance(distance, int):
+        if not all(
+            isinstance(point, float) for point in center_point
+        ) or not isinstance(distance, int):
             raise ValueError("Incorrect values passed")
 
         petrol_locations = geometries_from_point(
-            center_point = center_point,
-            tags = {"amenity":"fuel",
-                    "fuel":fuel_type},
-            dist = distance)
-        
-        if not isinstance(petrol_locations, gpd.GeoDataFrame) or len(petrol_locations) < 1:
+            center_point=center_point,
+            tags={"amenity": "fuel", "fuel": fuel_type},
+            dist=distance,
+        )
+
+        if (
+            not isinstance(petrol_locations, gpd.GeoDataFrame)
+            or len(petrol_locations) < 1
+        ):
             raise TypeError("No petrol locations found")
-    
+
         return petrol_locations
-    
+
     except ValueError as e:
         print(e)
     except TypeError as e:
         print(e)
 
-def add_petrol_stations_to_map(map_obj: folium.Map, gdf: gpd.GeoDataFrame,
-                      popup_text_col: str = None):
+
+def add_petrol_stations_to_map(
+    map_obj: folium.Map, gdf: gpd.GeoDataFrame, popup_text_col: str = None
+):
     """
     Add points from a GeoDataFrame to a Folium Map object
-    
+
     Inputs
         map_obj: A Folium Map Object
         gdf: A GeoDataFrame containing point geometries
@@ -125,11 +134,11 @@ def add_petrol_stations_to_map(map_obj: folium.Map, gdf: gpd.GeoDataFrame,
     try:
         if not isinstance(map_obj, folium.Map) or not isinstance(gdf, gpd.GeoDataFrame):
             raise ValueError("Invalid map or geodataframe")
-            
+
         if popup_text_col and popup_text_col not in gdf.columns:
             raise ValueError(f"{popup_text_col} not found in GeoDataFrame columns")
-        
-        if 'geometry' not in gdf.columns:
+
+        if "geometry" not in gdf.columns:
             raise ValueError("No 'geometry' column found in GeoDataFrame")
 
         gdf = convert_polygons_to_points(gdf)
@@ -143,19 +152,20 @@ def add_petrol_stations_to_map(map_obj: folium.Map, gdf: gpd.GeoDataFrame,
 
         for coord, text in zip(gdf.geometry, popup_text):
             print(text)
-            folium.Marker(location=[coord.y, coord.x], 
-                          popup=text,
-                          tooltip=tooltip,
-                          icon = folium.Icon(color="blue",
-                                   icon="gas-pump",
-                                   prefix="fa")).add_to(map_obj)
+            folium.Marker(
+                location=[coord.y, coord.x],
+                popup=text,
+                tooltip=tooltip,
+                icon=folium.Icon(color="blue", icon="gas-pump", prefix="fa"),
+            ).add_to(map_obj)
 
         return map_obj
-    
+
     except ValueError as e:
         print(e)
     except Exception as e:
         print(e)
+
 
 def convert_polygons_to_points(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
@@ -165,31 +175,52 @@ def convert_polygons_to_points(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
 
     return gdf
 
-def add_origin_to_map(latitude, longitude, map_obj):
+
+def add_origin_to_map(
+    latitude: float, longitude: float, map_obj: folium.Map
+) -> folium.Map:
     """
-    Adds origin to the folium map object
-    """
-    folium.Marker(location=[latitude, longitude],
-                  popup="Home",
-                  tooltip="Home",
-                  icon=folium.Icon(color="red",
-                                   icon="home",
-                                   prefix="fa"),
-                 ).add_to(map_obj)
+    Add origin to the folium map object
+
+    Inputs
+        latitude: float of latitude
+        longitude: float of longitude
+        map_obj: folium map object to add the marker to
     
+    Outputs
+        map_obj: folium Map obejct with marker for origin
+    """
+    folium.Marker(
+        location=[latitude, longitude],
+        popup="Home",
+        tooltip="Home",
+        icon=folium.Icon(color="red", icon="home", prefix="fa"),
+    ).add_to(map_obj)
+
     return map_obj
 
-def add_circle_to_map(latitude, longitude, map_obj, distance):
+
+def add_circle_to_map(
+    latitude: float, longitude: float, map_obj: folium.Map, distance: int
+) -> folium.Map:
     """
     Adds distance circle to map
+
+      Inputs
+        latitude: float of latitude
+        longitude: float of longitude
+        map_obj: folium map object to add the marker to
+    
+    Outputs
+        map_obj: folium Map obejct with origin circle added
     """
 
     folium.Circle(
-        radius = distance,
+        radius=distance,
         location=[latitude, longitude],
-        popup = f"Distance: {distance/1000}km",
-        color = "crimson",
-        fill=False
+        popup=f"Distance: {distance/1000}km",
+        color="crimson",
+        fill=False,
     ).add_to(map_obj)
 
     return map_obj
