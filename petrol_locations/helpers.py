@@ -244,3 +244,23 @@ def get_petrol_stations_name(gdf: gpd.GeoDataFrame, columns: list) -> list:
         petrol_names.append(petrol_station_name)
 
     return petrol_names
+
+def get_petrol_station_address(gdf: gpd.GeoDataFrame, columns: list) -> gpd.GeoDataFrame:
+    """
+    create a column fo petrol stations address
+
+    Inputs
+        gdf: geodataframe containing addres information
+        columns: list of potential address columns
+
+    Outputs
+        addresses: a list of petrol station addresses
+    """
+
+    valid_cols = [col for col in columns if col in gdf.columns]
+
+    addresses = list(gdf[valid_cols].apply(", ".join, axis=1))
+
+    addresses = [address if address != ', , , ' else "N/A" for address in addresses]
+
+    return addresses

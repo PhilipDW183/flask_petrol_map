@@ -5,7 +5,7 @@
 </div>
 
 <div class="row mb-3">
-  <div class="col-12 col-md-5 col-xl-3">
+  <div class="col-12 col-md-5 col-xl-4">
     <form name="search", method="post">
       {{form.hidden_tag()}}
       <div class="row">
@@ -33,9 +33,31 @@
 
       </div>
     </form>
+    <div class = "mt-3">
+      {% if petrol_station_loc %}
+        <h2>Petrol Stations</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Address</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for petrol_station in petrol_station_loc %}
+          <tr>
+            <td>{{petrol_station[0]}}</td>
+            <td>{{petrol_station[1]}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        </table>
+
+      {% endif %}
+    </div>
 
   </div>
-  <div class="col-12 col-md-7 col-xl-9 mt-2 mb-2 embed-responsive" id="map">
+  <div class="col-12 col-md-7 col-xl-8 mt-2 mb-2 embed-responsive" id="map">
     {{map|safe}}
   </div>
 </div>
