@@ -259,7 +259,7 @@ def get_petrol_station_address(gdf: gpd.GeoDataFrame, columns: list) -> gpd.GeoD
 
     valid_cols = [col for col in columns if col in gdf.columns]
 
-    addresses = list(gdf[valid_cols].apply(", ".join, axis=1))
+    addresses = list(gdf[valid_cols].fillna("").apply(", ".join, axis=1))
 
     addresses = [address if address != ', , , ' else "N/A" for address in addresses]
 
